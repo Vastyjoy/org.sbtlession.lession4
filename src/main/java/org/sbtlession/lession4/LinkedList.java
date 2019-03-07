@@ -1,9 +1,10 @@
 package org.sbtlession.lession4;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LinkedList<E> {
+public class LinkedList<E> implements Collection<E> {
 
     Node<E> first;
     Node<E> last;
@@ -141,7 +142,7 @@ public class LinkedList<E> {
      * Медот вставки в конец списка
      *
      * @param e Data
-     * @return
+     * @return True если вставка произвдена успешно, false если вставка не произведена
      */
     public boolean add(E e) {
         if (last == null) {
@@ -158,6 +159,81 @@ public class LinkedList<E> {
         }
     }
 
+    @Override
+    public boolean remove(Object o) {
+        Iterator<E> iterator = this.iterator();
+        int index = 0;
+        while (iterator.hasNext()) {
+            E element = iterator.next();
+            if (element.equals(o)) {
+                remove(index);
+                return true;
+            }
+            index = index + 1;
+
+        }
+        return false;
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        if (c.size() > this.size()) return false;
+        else {
+            Iterator<E> thisIter = this.iterator();
+            Iterator<?> cIter = c.iterator();
+            while (cIter.hasNext()) {
+                E thisElem = thisIter.next();
+                Object object = cIter.next();
+                if (!thisElem.equals(object)) return false;
+            }
+            return true;
+        }
+
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends E> c) {
+        Iterator<? extends E> cIter = c.iterator();
+        while (cIter.hasNext()) {
+            this.add(cIter.next());
+        }
+        return true;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        Iterator<?> cIter = c.iterator();
+        while (cIter.hasNext()) {
+            Iterator<E> thisIter = this.iterator();
+            int index = 0;
+            while (thisIter.hasNext()) {
+                if (thisIter.next().equals(cIter.next())) remove(index);
+                index = index + 1;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        Iterator<?> cIter = c.iterator();
+        while (cIter.hasNext()) {
+            Iterator<E> thisIter = this.iterator();
+            int index = 0;
+            while (thisIter.hasNext()) {
+                if (!thisIter.next().equals(cIter.next())) remove(index);
+                index = index + 1;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void clear() {
+        for(int i=0; i<size;i++)remove(i);
+    }
+
+
     /**
      * Удаление элемента с номером Index из списка
      * Нумерация списка ведется с 0 до size
@@ -166,7 +242,7 @@ public class LinkedList<E> {
      * @return Возвращает удаленный элемент
      * @throws IndexOutOfBoundsException Выбасывает ошибку, если index вне допустимого диапазона
      */
-    public E remove(int index) throws IndexOutOfBoundsException {
+    public E remove(int index) {
         if (index < size && index >= 0) {
             Node<E> node = first;
             for (int i = 0; i < index; i++) {
@@ -226,8 +302,47 @@ public class LinkedList<E> {
         }
     }
 
+    @Override
+    public int size() {
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        if (size > 0) return true;
+        else return false;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        Iterator<E> iterator = this.iterator();
+        while (iterator.hasNext()) {
+            E element = iterator.next();
+            if (element.equals(o)) return true;
+        }
+        return false;
+    }
+
     public Iterator<E> iterator() {
         return new LinkIterator<E>(first);
+    }
+
+    @Override
+    public Object[] toArray() {
+        Object object[] = new Object[size];
+        Iterator<E> iterator = this.iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            object[i] = iterator.next();
+            i++;
+        }
+
+        return object;
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return null;
     }
 
     /**
