@@ -113,6 +113,13 @@ public class LinkedList<E> implements Collection<E> {
 
     }
 
+    /**
+     * Добавление элемента по индексу
+     *
+     * @param index   Номер позиции в который добавляем
+     * @param element
+     * @throws IndexOutOfBoundsException
+     */
     public void add(int index, E element) throws IndexOutOfBoundsException {
         if (index < size && index >= 0) {
             Node<E> newNode = new Node<E>(element);
@@ -140,10 +147,12 @@ public class LinkedList<E> implements Collection<E> {
 
     /**
      * Медот вставки в конец списка
+     * Спросить про контракт, в Коллекшине add вроде не добавляет элемент, если такой уже есть
      *
      * @param e Data
      * @return True если вставка произвдена успешно, false если вставка не произведена
      */
+    @Override
     public boolean add(E e) {
         if (last == null) {
             first = new Node<E>(e);
@@ -159,6 +168,11 @@ public class LinkedList<E> implements Collection<E> {
         }
     }
 
+    /**
+     * Удаление элемента из LinkedList
+     * @param o -удаляемый объект
+     * @return true если коллекция была модифицированна, иначе false;
+     */
     @Override
     public boolean remove(Object o) {
         Iterator<E> iterator = this.iterator();
@@ -175,6 +189,13 @@ public class LinkedList<E> implements Collection<E> {
         return false;
     }
 
+    /**
+     * Проверяет содержаться ли в данной коллекции все элементы из указанной
+     * Порядок не учитывается
+     * Спросить про контракт?
+     * @param c коллекция, элементы которой будут проверяться.
+     * @return true если все элементы содержаться, flase в противном случае
+     */
     @Override
     public boolean containsAll(Collection<?> c) {
         if (c.size() > this.size()) return false;
@@ -191,6 +212,13 @@ public class LinkedList<E> implements Collection<E> {
 
     }
 
+    /**
+     * Добавляет все элементы из колекции Collection<? extends E>  в текущую коллекцию
+     * Порядок элементов сохраняется.
+     * Добавление происходит в конец
+     * @param c
+     * @return возвращает true, если коллекция была модифицирована
+     */
     @Override
     public boolean addAll(Collection<? extends E> c) {
         Iterator<? extends E> cIter = c.iterator();
@@ -200,6 +228,12 @@ public class LinkedList<E> implements Collection<E> {
         return true;
     }
 
+    /**
+     * Удаляет все элементы из коллекции  c в текущей коллекции
+     * Порядок элементов не учитывается
+     * @param c
+     * @return
+     */
     @Override
     public boolean removeAll(Collection<?> c) {
         Iterator<?> cIter = c.iterator();
@@ -214,6 +248,11 @@ public class LinkedList<E> implements Collection<E> {
         return true;
     }
 
+    /**
+     * Удаляет все элементы из текущей коллекции, которые несодержаться в коллекции c
+     * @param c
+     * @return
+     */
     @Override
     public boolean retainAll(Collection<?> c) {
         Iterator<?> cIter = c.iterator();
@@ -228,9 +267,29 @@ public class LinkedList<E> implements Collection<E> {
         return true;
     }
 
+    /**
+     * Очищает коллекцию
+     */
     @Override
     public void clear() {
-        for(int i=0; i<size;i++)remove(i);
+        for (int i = 0; i < size; i++) remove(i);
+    }
+
+    /**
+     * копирует элементы коллекции collection в текущую коллекцию, порядок элементов сохраняется
+     * @param collection
+     * @return
+     */
+    public boolean copy(Collection<? extends E> collection) {
+        Iterator<? extends E> iter = collection.iterator();
+        if (collection.size() != 0) {
+            while (iter.hasNext()) {
+            /*Uncheked cust*/ E element=(E)iter.next();
+            this.add(element);
+            }
+            return true;
+        } else return false;
+
     }
 
 
@@ -282,37 +341,51 @@ public class LinkedList<E> implements Collection<E> {
         throw new IndexOutOfBoundsException();
     }
 
-    class LinkIterator<E> implements Iterator<E> {
-        Node<E> node;
+class LinkIterator<E> implements Iterator<E> {
+    Node<E> node;
 
-        public LinkIterator(Node<E> node) {
-            this.node = node;
-        }
-
-        public boolean hasNext() {
-            if (node != null) return true;
-            else return false;
-        }
-
-        public E next() throws NoSuchElementException {
-            Node<E> tempNode = node;
-            if (tempNode == null) throw new NoSuchElementException();
-            node = tempNode.getNext();
-            return tempNode.getData();
-        }
+    public LinkIterator(Node<E> node) {
+        this.node = node;
     }
 
+    public boolean hasNext() {
+        if (node != null) return true;
+        else return false;
+    }
+
+    public E next() throws NoSuchElementException {
+        Node<E> tempNode = node;
+        if (tempNode == null) throw new NoSuchElementException();
+        node = tempNode.getNext();
+        return tempNode.getData();
+    }
+
+}
+
+    /**
+     * Возвращает количество элементов в коллекция
+     * @return
+     */
     @Override
     public int size() {
         return size;
     }
 
+    /**
+     * Проверяет на пустоту коллекции
+     * @return
+     */
     @Override
     public boolean isEmpty() {
         if (size > 0) return true;
         else return false;
     }
 
+    /**
+     * Проверяет, содержиться указанный элемент в коллекции
+     * @param o
+     * @return
+     */
     @Override
     public boolean contains(Object o) {
         Iterator<E> iterator = this.iterator();
@@ -327,6 +400,10 @@ public class LinkedList<E> implements Collection<E> {
         return new LinkIterator<E>(first);
     }
 
+    /**
+     * Представлении коллекции в виде массива
+     * @return
+     */
     @Override
     public Object[] toArray() {
         Object object[] = new Object[size];
@@ -352,9 +429,9 @@ public class LinkedList<E> implements Collection<E> {
         return size;
     }
 
+
     public static void main(String[] args) {
         LinkedList<Integer> list = new LinkedList<Integer>();
-
         list.add(1);
         list.add(2);
         list.add(3);
